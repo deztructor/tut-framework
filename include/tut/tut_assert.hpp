@@ -7,6 +7,7 @@
 #include <iterator>
 #include <cassert>
 #include <cmath>
+#include <functional>
 
 #if defined(TUT_USE_POSIX)
 #include <errno.h>
@@ -82,6 +83,45 @@ template <typename M>
 void ensure_not(const M& msg, bool cond)
 {
     ensure(msg, !cond);
+}
+
+/**
+ * Tests two objects for being equal.
+ * Throws if false.
+ *
+ * NB: both LHS and RHS must have operator << defined somewhere, or
+ * client code will not compile at all!
+ */
+template <class Op, typename M, typename LHS, typename RHS>
+void ensure_op(char const *op_desc, const M& msg,
+               const LHS& actual, const RHS& expected)
+{
+    Op op;
+    if (!op(expected, actual))
+    {
+        std::ostringstream ss;
+        detail::msg_prefix(ss,msg)
+           << "`"
+           << expected
+           << "` should be " << op_desc << " `"
+           << actual
+           << "`";
+        throw failure(ss.str());
+    }
+}
+
+template <typename M, typename LHS, typename RHS>
+void ensure_ne
+(const M& msg, const LHS& actual, const RHS& expected)
+{
+    return ensure_op<std::not_equal_to<LHS> >("!=", msg, actual, expected);
+}
+
+template <typename M, typename LHS, typename RHS>
+void ensure_eq
+(const M& msg, const LHS& actual, const RHS& expected)
+{
+    return ensure_op<std::equal_to<LHS> >("==", msg, actual, expected);
 }
 
 /**
