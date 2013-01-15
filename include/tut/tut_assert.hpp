@@ -124,6 +124,22 @@ void ensure_eq
     return ensure_op<std::equal_to<LHS> >("==", msg, actual, expected);
 }
 
+/** 
+ * Tests exception ExceptionT is throwed in callable FnT called with
+ * arguments args
+ */
+template <typename ExceptionT, typename M, typename FnT, typename ... Args>
+void ensure_throws(const M &msg, FnT fn, Args ... args)
+{
+    try {
+        fn(args...);
+        std::ostringstream ss;
+        detail::msg_prefix(ss,msg) << "exception is expected";
+        throw failure(ss.str());
+    } catch (ExceptionT const &e) {
+    }
+}
+
 /**
  * Tests two objects for being equal.
  * Throws if false.
