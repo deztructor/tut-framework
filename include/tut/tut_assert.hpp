@@ -124,9 +124,27 @@ void ensure_eq
     return ensure_op<std::equal_to<LHS> >("==", msg, actual, expected);
 }
 
-/** 
- * Tests exception ExceptionT is throwed in callable FnT called with
- * arguments args
+/**
+ * Tests exception of type ExceptionT is throwed in callable fn(args).
+ * Performs additional exception verification in the process()
+ */
+template <typename ExceptionT, typename M,
+          typename FnT, typename ProcessFnT, typename ... Args>
+void ensure_throws_verify
+(const M &msg, FnT fn, ProcessFnT process, Args ... args)
+{
+    try {
+        fn(args...);
+        std::ostringstream ss;
+        detail::msg_prefix(ss, msg) << "exception is expected";
+        throw failure(ss.str());
+    } catch (ExceptionT const &e) {
+        process(e);
+    }
+}
+
+/**
+ * Tests exception of type ExceptionT is throwed in callable fn(args).
  */
 template <typename ExceptionT, typename M, typename FnT, typename ... Args>
 void ensure_throws(const M &msg, FnT fn, Args ... args)
@@ -134,7 +152,7 @@ void ensure_throws(const M &msg, FnT fn, Args ... args)
     try {
         fn(args...);
         std::ostringstream ss;
-        detail::msg_prefix(ss,msg) << "exception is expected";
+        detail::msg_prefix(ss, msg) << "exception is expected";
         throw failure(ss.str());
     } catch (ExceptionT const &e) {
     }
@@ -359,4 +377,3 @@ void skip(const M& msg)
 }
 
 #endif
-
