@@ -102,9 +102,9 @@ void ensure_op(char const *op_desc, const M& msg,
         std::ostringstream ss;
         detail::msg_prefix(ss,msg)
            << "`"
-           << expected
-           << "` should be " << op_desc << " `"
            << actual
+           << "` should be " << op_desc << " `"
+           << expected
            << "`";
         throw failure(ss.str());
     }
