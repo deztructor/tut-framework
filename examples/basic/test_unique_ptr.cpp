@@ -1,10 +1,10 @@
 #include <tut/tut.hpp>
 #include <memory>
 
-using std::auto_ptr;
+using std::unique_ptr;
 
 /**
- * This example test group tests std::auto_ptr implementation.
+ * This example test group tests std::unique_ptr implementation.
  * Tests are far from full, of course.
  */
 namespace tut
@@ -22,10 +22,10 @@ namespace tut
  * Finally, after each test, test object is destroyed independently
  * of test result, so any cleanup work should be located in destructor.
  */
-struct auto_ptr_data
+struct unique_ptr_data
 {
     /**
-     * Type used to check scope lifetime of auto_ptr object.
+     * Type used to check scope lifetime of unique_ptr object.
      * Sets extern boolean value into true at constructor, and
      * to false at destructor.
      */
@@ -45,21 +45,21 @@ struct auto_ptr_data
         }
     };
 
-    auto_ptr_data(): exists(false) { }
+    unique_ptr_data(): exists(false) { }
 
-    virtual ~auto_ptr_data() { }
+    virtual ~unique_ptr_data() { }
 };
 
 /**
  * This group of declarations is just to register
  * test group in test-application-wide singleton.
- * Name of test group object (auto_ptr_group) shall
+ * Name of test group object (unique_ptr_group) shall
  * be unique in tut:: namespace. Alternatively, you
  * you may put it into anonymous namespace.
  */
-typedef test_group<auto_ptr_data> tf;
+typedef test_group<unique_ptr_data> tf;
 typedef tf::object object;
-tf auto_ptr_group("std::auto_ptr");
+tf unique_ptr_group("std::unique_ptr");
 
 /**
  * Checks default constructor.
@@ -68,7 +68,7 @@ template<>
 template<>
 void object::test<1>()
 {
-    auto_ptr<existing> ap;
+    unique_ptr<existing> ap;
     ensure(ap.get() == 0);
     ensure(ap.operator->() == 0);
 }
@@ -81,7 +81,7 @@ template<>
 void object::test<2>()
 {
     {
-        auto_ptr<existing> ap(new existing(exists));
+        unique_ptr<existing> ap(new existing(exists));
         ensure("get", ap.get() != 0);
         ensure_equals("constructed", exists, true);
     }
@@ -96,7 +96,7 @@ template<>
 template<>
 void object::test<3>()
 {
-    auto_ptr<existing> ap(new existing(exists));
+    unique_ptr<existing> ap(new existing(exists));
     existing* p1 = ap.get();
     existing* p2 = ap.operator->();
     ensure("get equiv ->", p1 == p2);
@@ -113,9 +113,9 @@ template<>
 void object::test<4>()
 {
     {
-        auto_ptr<existing> ap(new existing(exists));
+        unique_ptr<existing> ap(new existing(exists));
         existing* p1 = ap.get();
-        auto_ptr<existing> ap2(ap.release());
+        unique_ptr<existing> ap2(ap.release());
         ensure("same pointer", p1 == ap2.get());
         ensure("lost ownership", ap.get() == 0);
     }
@@ -130,10 +130,10 @@ template<>
 void object::test<5>()
 {
     {
-        auto_ptr<existing> ap(new existing(exists));
+        unique_ptr<existing> ap(new existing(exists));
         existing* p1 = ap.get();
-        auto_ptr<existing> ap2;
-        ap2 = ap;
+        unique_ptr<existing> ap2;
+        ap2.reset(ap.release());
         ensure("same pointer", p1 == ap2.get());
         ensure("lost ownership", ap.get() == 0);
     }
@@ -148,9 +148,9 @@ template<>
 void object::test<6>()
 {
     {
-        auto_ptr<existing> ap(new existing(exists));
+        unique_ptr<existing> ap(new existing(exists));
         existing* p1 = ap.get();
-        auto_ptr<existing> ap2(ap);
+        unique_ptr<existing> ap2(ap.release());
         ensure("same pointer", p1 == ap2.get());
         ensure("lost ownership", ap.get() == 0);
     }
