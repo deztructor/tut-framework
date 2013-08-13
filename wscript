@@ -1,5 +1,4 @@
 APPNAME='tut'
-VERSION='trunk'
 srcdir = '.'
 blddir = 'build'
 
@@ -8,12 +7,16 @@ import Scripting
 import Utils
 import glob
 import os
+import platform
 
 def set_options(opt):
     if Utils.unversioned_sys_platform() == 'win32':
         default_tool = 'msvc'
     else:
         default_tool = 'g++'
+
+    gr = opt.get_option_group('--prefix')
+    gr.add_option('--version', action='store', help='version', default="0.0.0", dest="version")
 
     gr = opt.add_option_group('build options')
     gr.add_option('--debug',      action='store_true', help='Build debug variant', default=False)
@@ -32,6 +35,11 @@ def set_options(opt):
     gr.add_option('--coverage',   action='store_true', help='Produce test coverage report (off by default, implies --debug and --test)', default=False)
 
 def configure(conf):
+    if platform.architecture()[0] == '64bit':
+        conf.env.LIBDIR = Utils.subst_vars('${PREFIX}/lib64', conf.env)
+    else:
+        conf.env.LIBDIR = Utils.subst_vars('${PREFIX}/lib', conf.env)
+
     if Options.options.coverage:
         Options.options.debug = True
 
@@ -89,7 +97,7 @@ def configure(conf):
     dest.write('includedir=${prefix}/include\n')
     dest.write('Name: TUT\n')
     dest.write('Description: Template Unit Test framework\n')
-    dest.write('Version: '+VERSION+'\n')
+    dest.write('Version: {}\n'.format(Options.options.version))
     dest.write('Requires:\n')
     dest.write('Cflags: -I${includedir}\n')
     dest.close()
@@ -104,7 +112,7 @@ def build(bld):
     bld.install_files( os.path.join('${PREFIX}', 'include', 'tut'),
                        os.path.join(bld.bdir, bld.env.variant(), 'include', 'tut', 'tut_config.hpp'))
     # pkgconfig file
-    bld.install_files( os.path.join('${PREFIX}', 'lib', 'pkgconfig'),
+    bld.install_files( os.path.join('${LIBDIR}', 'pkgconfig'),
                        os.path.join(bld.bdir, bld.env.variant(), 'lib', 'pkgconfig', 'tut.pc'))
 
 
