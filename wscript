@@ -31,12 +31,18 @@ def set_options(opt):
     gr.add_option('--with-posix',    action='store_true', help='Build with POSIX extensions (off by default)', default=False)
     gr.add_option('--without-posix', action='store_false', dest='with_posix')
 
+    gr.add_option('--with-multiarch',    action='store_true', help='Build with multiarch (off by default)', default=False)
+    gr.add_option('--without-multiarch', action='store_false', dest='with_multiarch')
+
     gr = opt.add_option_group('test options')
     gr.add_option('--coverage',   action='store_true', help='Produce test coverage report (off by default, implies --debug and --test)', default=False)
 
 def configure(conf):
     if platform.architecture()[0] == '64bit':
-        conf.env.LIBDIR = Utils.subst_vars('${PREFIX}/lib64', conf.env)
+        if Options.options.with_multiarch:
+            conf.env.LIBDIR = Utils.subst_vars('${PREFIX}/lib64', conf.env)
+        else:
+            conf.env.LIBDIR = Utils.subst_vars('${PREFIX}/lib', conf.env)
     else:
         conf.env.LIBDIR = Utils.subst_vars('${PREFIX}/lib', conf.env)
 
