@@ -1,4 +1,5 @@
 APPNAME='tut'
+VERSION='trunk'
 srcdir = '.'
 blddir = 'build'
 
@@ -110,7 +111,9 @@ def configure(conf):
 
 def build(bld):
     libtut = bld.new_task_gen(features='cxx', includes='include', export_incdirs = 'include', target='tut')
-
+    # old headers
+    bld.install_files( os.path.join('${PREFIX}', 'include'),
+                       glob.glob(os.path.join('include','*.h')) )
     # new headers
     bld.install_files( os.path.join('${PREFIX}', 'include', 'tut'),
                        glob.glob(os.path.join('include', 'tut', '*.hpp')) )
