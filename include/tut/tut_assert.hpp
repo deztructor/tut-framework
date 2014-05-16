@@ -124,6 +124,34 @@ void ensure_eq
     return ensure_op<std::equal_to<LHS> >("==", msg, actual, expected);
 }
 
+template <typename M, typename LHS, typename RHS>
+void ensure_ge
+(const M& msg, const LHS& actual, const RHS& expected)
+{
+    return ensure_op<std::greater_equal<LHS> >(">=", msg, actual, expected);
+}
+
+template <typename M, typename LHS, typename RHS>
+void ensure_le
+(const M& msg, const LHS& actual, const RHS& expected)
+{
+    return ensure_op<std::less_equal<LHS> >("<=", msg, actual, expected);
+}
+
+template <typename M, typename LHS, typename RHS>
+void ensure_gt
+(const M& msg, const LHS& actual, const RHS& expected)
+{
+    return ensure_op<std::greater<LHS> >(">", msg, actual, expected);
+}
+
+template <typename M, typename LHS, typename RHS>
+void ensure_lt
+(const M& msg, const LHS& actual, const RHS& expected)
+{
+    return ensure_op<std::less<LHS> >("<", msg, actual, expected);
+}
+
 /**
  * Tests exception of type ExceptionT is throwed in callable fn(args).
  * Performs additional exception verification in the process()
@@ -147,10 +175,10 @@ void ensure_throws_verify
  * Tests exception of type ExceptionT is throwed in callable fn(args).
  */
 template <typename ExceptionT, typename M, typename FnT, typename ... Args>
-void ensure_throws(const M &msg, FnT fn, Args ... args)
+void ensure_throws(const M &msg, FnT fn, Args &&... args)
 {
     try {
-        fn(args...);
+        fn(std::forward<Args>(args)...);
         std::ostringstream ss;
         detail::msg_prefix(ss, msg) << "exception is expected";
         throw failure(ss.str());
