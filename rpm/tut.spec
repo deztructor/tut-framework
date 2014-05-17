@@ -24,6 +24,9 @@ Template Unit Tests.
 rm -rf %{buildroot}
 ./waf install --destdir=%{buildroot}
 
+%check
+./waf test
+
 %clean
 rm -rf %{buildroot}
 
