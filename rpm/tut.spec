@@ -32,5 +32,6 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
+%{_includedir}/tut*.h
 %{_includedir}/tut/*.hpp
 %{_libdir}/pkgconfig/tut.pc
