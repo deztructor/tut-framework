@@ -161,13 +161,17 @@ template <typename ExceptionT, typename M,
 void ensure_throws_verify
 (const M &msg, FnT fn, ProcessFnT process, Args ... args)
 {
+    bool is_thrown = false;
     try {
         fn(args...);
+    } catch (ExceptionT const &e) {
+        is_thrown = true;
+        process(e);
+    }
+    if (!is_thrown) {
         std::ostringstream ss;
         detail::msg_prefix(ss, msg) << "exception is expected";
         throw failure(ss.str());
-    } catch (ExceptionT const &e) {
-        process(e);
     }
 }
 
@@ -177,12 +181,17 @@ void ensure_throws_verify
 template <typename ExceptionT, typename M, typename FnT, typename ... Args>
 void ensure_throws(const M &msg, FnT fn, Args &&... args)
 {
+    auto isnt_thrown = true;
     try {
         fn(std::forward<Args>(args)...);
+    } catch (ExceptionT const &e) {
+        isnt_thrown = false;
+        // do nothing, exception is expected
+    }
+    if (isnt_thrown) {
         std::ostringstream ss;
         detail::msg_prefix(ss, msg) << "exception is expected";
         throw failure(ss.str());
-    } catch (ExceptionT const &e) {
     }
 }
 
