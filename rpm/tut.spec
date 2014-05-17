@@ -17,7 +17,7 @@ Template Unit Tests.
 %setup -q -n %{name}-%{version}
 
 %build
-./waf configure --prefix=%{_prefix} --version=%{version}
+./waf configure --prefix=%{_prefix} --version=%{version}  %{?_with_multiarch:--with-multiarch}
 ./waf build %{?jobs:-j%jobs}
 
 %install
