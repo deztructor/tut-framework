@@ -97,7 +97,7 @@ void ensure_op(char const *op_desc, const M& msg,
                const LHS& actual, const RHS& expected)
 {
     Op op;
-    if (!op(expected, actual))
+    if (!op(actual, expected))
     {
         std::ostringstream ss;
         detail::msg_prefix(ss,msg)
