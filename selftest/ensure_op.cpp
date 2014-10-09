@@ -9,6 +9,9 @@ using std::ostringstream;
 using std::runtime_error;
 
 namespace {
+
+inline std::string str(char const *s) { return std::string(s); }
+
 enum test_ids {
     test_id_eq = 1
     , test_id_ne
@@ -40,7 +43,7 @@ namespace tut
   void object::test<test_id_eq>()
   {
       ensure_eq("Eq int", 1, 1);
-      ensure_eq("Eq str", "a", "a");
+      ensure_eq("Eq str", str("a"), "a");
       ensure_throws<failure>
         ("ensure_eq should fail here", []() {
           ensure_eq("Eq int", 1, 2);
@@ -52,7 +55,7 @@ namespace tut
   void object::test<test_id_ne>()
   {
       ensure_ne("Eq int", 1, 3);
-      ensure_ne("Eq str", "a", "b");
+      ensure_ne("Eq str", str("a"), "b");
       ensure_throws<failure>
         ("ensure_ne should fail here", []() {
           ensure_ne("ne int", 1, 1);
@@ -65,8 +68,8 @@ namespace tut
   {
       ensure_ge("ge int", 1, 1);
       ensure_ge("ge int", 2, 1);
-      ensure_ge("ge str", "a", "a");
-      ensure_ge("ge str", "b", "a");
+      ensure_ge("ge str", str("a"), "a");
+      ensure_ge("ge str", str("b"), "a");
       ensure_throws<failure>
         ("ensure_ge should fail here", []() {
           ensure_ge("ge int", 1, 2);
@@ -79,8 +82,8 @@ namespace tut
   {
       ensure_le("le int", 1, 1);
       ensure_le("le int", 1, 2);
-      ensure_le("le str", "a", "a");
-      ensure_le("le str", "a", "b");
+      ensure_le("le str", str("a"), "a");
+      ensure_le("le str", str("a"), "b");
       ensure_throws<failure>
         ("ensure_le should fail here", []() {
           ensure_le("le int", 2, 1);
@@ -93,7 +96,7 @@ namespace tut
   {
       ensure_lt("lt int", 0, 1);
       ensure_lt("lt int", -1, 1);
-      ensure_lt("lt str", "a", "b");
+      ensure_lt("lt str", str("a"), "b");
       ensure_throws<failure>
         ("ensure_lt should fail here", []() {
           ensure_lt("lt int", 2, 1);
@@ -106,7 +109,7 @@ namespace tut
   {
       ensure_gt("gt int", 1, 0);
       ensure_gt("gt int", 1, -1);
-      ensure_gt("gt str", "b", "a");
+      ensure_gt("gt str", str("b"), "a");
       ensure_throws<failure>
         ("ensure_gt should fail here", []() {
           ensure_gt("gt int", 1, 2);
